@@ -1,24 +1,19 @@
-# Projet1 - Sorcier Isométrique Hack'n'Slash
+# 🎮 Grok - Projet1 : Sorcerer Isometric Hack'n'Slash
 
-## Description
-Petit jeu web de type **hack n slash** inspiré de Diablo, avec un sorcier principal en robe violette déchirée, barbe blanche, yeux rouges, bâton cristal pourpre (@image1).
+**Petit jeu web Diablo-like** avec un sorcier violet en vue isométrique.
 
-Direction artistique gothic dark purple, lune, brouillard (@image2).
+### 🎮 **JOUER IMMÉDIATEMENT**
+**[▶️ Lancer le jeu (Live Demo)](https://wtblackwolf.github.io/Grok/projet1/)**
 
-Tiles sol variations (@image3).
+**Fonctionnalités mobiles** :
+- Joystick virtuel (touche gauche → mouvement analogique)
+- 4 boutons d’actions tactiles (droite)
+- Compatible smartphone & tablette
+- Contrôles clavier/souris sur PC
 
-**v0.1 MVP** : Mouvement isométrique + sorts basiques + biomes (marécage, neige, grottes, volcan, cathédrale).
-
-## Installation
-```bash
-cd projet1
-npm install
-npm run dev
-```
-
-## Stack
+### Stack
 - Phaser 3
-- TypeScript
-- Vite
+- Vite + TypeScript
+- Vue isométrique 2.5D
 
-Prêt pour sprites animés du sorcier et tilemaps Tiled ! 🔥
+**Prochaines étapes** : Sprites animés, tilemaps biomes, sorts, arbre de compétences.
