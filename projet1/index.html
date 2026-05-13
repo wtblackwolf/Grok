@@ -4,14 +4,95 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
   <title>Sorcerer Isometric</title>
+  <script src="https://cdn.jsdelivr.net/npm/phaser@3.70.0/dist/phaser.min.js"></script>
   <style>
-    body { margin:0; background:#0a001f; overflow:hidden; touch-action: none; }
-    canvas { display:block; }
-    #ui { position:absolute; top:10px; left:10px; color:white; pointer-events:none; z-index:100; }
+    body { margin:0; background:#0a001f; overflow:hidden; touch-action:none; }
+    canvas { display:block; margin:0 auto; }
+    #ui { position:absolute; top:10px; left:10px; color:white; z-index:100; font-family:Arial; pointer-events:none; }
   </style>
 </head>
 <body>
-  <div id="ui">Sorcier Isométrique - Joystick gauche + Boutons droite</div>
-  <script type="module" src="./src/main.ts"></script>
+  <div id="ui">Sorcier Isométrique - Joystick gauche + 4 boutons droite</div>
+  <script>
+    const config = {
+      type: Phaser.AUTO,
+      width: 1280,
+      height: 720,
+      backgroundColor: '#0a001f',
+      physics: { default: 'arcade' },
+      scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
+      scene: {
+        preload: function() {},
+        create: function() {
+          // Fond
+          this.add.rectangle(0, 0, 3000, 3000, 0x1a0033).setOrigin(0);
+          this.add.grid(640, 360, 30, 30, 64, 32, 0x2a1a4d, 0.8, 0x3a2a6d);
+
+          // Sorcier placeholder
+          const player = this.add.rectangle(640, 360, 50, 80, 0x8a2be2).setDepth(100);
+          this.add.text(610, 300, '🧙', { fontSize: '60px' }).setDepth(101);
+
+          // Contrôles clavier
+          const cursors = this.input.keyboard.createCursorKeys();
+
+          // Joystick + boutons (simplifié pour CDN)
+          let moveX = 0, moveY = 0;
+          let isDragging = false;
+          let dragStartX = 0, dragStartY = 0;
+
+          this.input.on('pointerdown', (p) => {
+            if (p.x < this.scale.width * 0.4) {
+              isDragging = true;
+              dragStartX = p.x;
+              dragStartY = p.y;
+            }
+          });
+
+          this.input.on('pointermove', (p) => {
+            if (!isDragging) return;
+            const dx = (p.x - dragStartX) / 60;
+            const dy = (p.y - dragStartY) / 60;
+            moveX = Math.max(-1, Math.min(1, dx));
+            moveY = Math.max(-1, Math.min(1, dy));
+          });
+
+          this.input.on('pointerup', () => { isDragging = false; moveX = 0; moveY = 0; });
+
+          // Boutons actions
+          const colors = [0xff00ff, 0x00ffff, 0xffff00, 0x00ff00];
+          const labels = ['🔥','⚡','🛡️','✨'];
+          for (let i = 0; i < 4; i++) {
+            const btn = this.add.rectangle(this.scale.width - 90, 150 + i*110, 70, 70, colors[i], 0.7)
+              .setInteractive()
+              .on('pointerdown', () => {
+                console.log('Sort', i+1, 'activé');
+                btn.setAlpha(1);
+                this.time.delayedCall(200, () => btn.setAlpha(0.7));
+              });
+            this.add.text(btn.x-15, btn.y-15, labels[i], {fontSize:'40px'}).setOrigin(0.5);
+          }
+
+          this.update = function() {
+            const speed = 5;
+            let vx = 0, vy = 0;
+
+            if (cursors.left.isDown || this.input.keyboard.addKey('A').isDown) vx -= 1;
+            if (cursors.right.isDown || this.input.keyboard.addKey('D').isDown) vx += 1;
+            if (cursors.up.isDown || this.input.keyboard.addKey('W').isDown) vy -= 1;
+            if (cursors.down.isDown || this.input.keyboard.addKey('S').isDown) vy += 1;
+
+            if (isDragging) { vx = moveX; vy = moveY; }
+
+            if (vx !== 0 && vy !== 0) { vx *= 0.707; vy *= 0.707; }
+
+            player.x += vx * speed;
+            player.y += vy * speed;
+          };
+        }
+      }
+    };
+
+    new Phaser.Game(config);
+  </script>
 </body>
 </html>
