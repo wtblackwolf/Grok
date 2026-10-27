@@ -14,6 +14,7 @@ import {
   createIdGenerator,
   mergeRegionElements,
   toPixelRect,
+  withArticle,
 } from '@pnc/shared';
 import type {
   ActResponse,
@@ -41,7 +42,6 @@ import { toGameView } from './views';
 export const SCENE_WIDTH = 1280;
 export const SCENE_HEIGHT = 720;
 const PLAYER = 'le voyageur';
-const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 export class GameSession {
   readonly bus = new EventBus<SessionEvents>();
@@ -330,7 +330,7 @@ export class GameSession {
     this.world.turn++;
     this.pending = [];
     this.recordEvents(
-      [{ actorId: 'player', kind: 'departure', description: `Le voyageur s'en va par ${lower(exitEl?.name ?? exit.label)}.`, perception: 'visible', salience: 1 }],
+      [{ actorId: 'player', kind: 'departure', description: `Le voyageur s'en va par ${withArticle(exitEl?.name ?? exit.label)}.`, perception: 'visible', salience: 1 }],
       from.id,
     );
 
@@ -348,14 +348,14 @@ export class GameSession {
     this.actionCache.clear();
     this.pending = [];
     this.recordEvents(
-      [{ actorId: 'player', kind: 'arrival', description: `Un voyageur arrive depuis ${from.name}.`, perception: 'visible', salience: 2 }],
+      [{ actorId: 'player', kind: 'arrival', description: `Un voyageur arrive depuis ${withArticle(from.name, { keepCase: true })}.`, perception: 'visible', salience: 2 }],
       target.id,
     );
     this.bus.emit('location:entered', { locationId: target.id, generated });
     const reactions = await this.collectReactions();
     return {
       view: this.view(),
-      narration: generated ? target.description : `Vous revenez : ${target.name}.`,
+      narration: generated ? target.description : `Vous revenez dans ${withArticle(target.name, { keepCase: true })}.`,
       reactions,
       generated,
     };

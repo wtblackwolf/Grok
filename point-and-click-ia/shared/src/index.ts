@@ -6,3 +6,4 @@ export * from './patch';
 export * from './perception';
 export * from './merge';
 export * from './ids';
+export * from './french';

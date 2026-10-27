@@ -40,3 +40,34 @@ export function clampWheelCenter(center: Vec2, outer: number, viewW: number, vie
   const y = Math.min(Math.max(center.y, outer), Math.max(outer, viewH - outer));
   return { x, y };
 }
+
+/**
+ * Sélection quand la roue a été décalée pour rester à l'écran (centre affiché ≠ point d'appui) :
+ *  - un pointeur posé sur un item affiché (à moins de `itemHitRadius` de son centre) le sélectionne ;
+ *  - sinon, relâcher près du point d'appui (zone morte) annule, comme au centre ;
+ *  - sinon l'angle est mesuré depuis le centre AFFICHÉ, pour correspondre à ce que voit le joueur.
+ * Si centre et point d'appui coïncident, équivaut à radialIndexAt (+ le test « sur l'item »).
+ */
+export function radialPick(
+  pointer: Vec2,
+  origin: Vec2,
+  center: Vec2,
+  count: number,
+  deadZone: number,
+  radius?: number,
+  itemHitRadius = deadZone * 1.4,
+): number | null {
+  if (count <= 0) return null;
+  if (radius !== undefined) {
+    let best: number | null = null;
+    let bestD = itemHitRadius;
+    for (let i = 0; i < count; i++) {
+      const p = radialItemPosition(i, count, radius);
+      const d = Math.hypot(pointer.x - (center.x + p.x), pointer.y - (center.y + p.y));
+      if (d < bestD) { bestD = d; best = i; }
+    }
+    if (best !== null) return best;
+  }
+  if (Math.hypot(pointer.x - origin.x, pointer.y - origin.y) < deadZone) return null;
+  return radialIndexAt(pointer.x - center.x, pointer.y - center.y, count, deadZone / 2);
+}

@@ -62,3 +62,18 @@ describe('géométrie & hit-testing', () => {
     expect(b.h).toBeCloseTo(0.4);
   });
 });
+
+import { toArticle, withArticle } from '../src/french';
+describe('withArticle', () => {
+  it('ajoute l’article attendu', () => {
+    expect(withArticle('Lampe à huile')).toBe('la lampe à huile');
+    expect(withArticle('Coffre')).toBe('le coffre');
+    expect(withArticle('Escalier vers la cave')).toBe("l'escalier vers la cave");
+    expect(withArticle('Pavés')).toBe('les pavés');
+    expect(withArticle('Taverne du Corbeau')).toBe('la taverne du Corbeau');
+    expect(withArticle('Taverne du Corbeau', { keepCase: true })).toBe('la Taverne du Corbeau');
+    expect(withArticle('Marthe, l’aubergiste')).toBe('Marthe, l’aubergiste');
+    expect(toArticle('Tonneau de bière')).toBe('au tonneau de bière');
+    expect(toArticle('Porte')).toBe('à la porte');
+  });
+});

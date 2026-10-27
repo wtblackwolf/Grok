@@ -5,14 +5,13 @@
  * des éléments, exactement comme un LLM le ferait à partir de la description. C'est un stand-in
  * déterministe ; le vrai MJ (providers/llm) pourra inventer librement.
  */
-import { MAX_ACTIONS, padBBox, bboxUnion, pick } from '@pnc/shared';
+import { MAX_ACTIONS, padBBox, bboxUnion, pick, toArticle, withArticle } from '@pnc/shared';
 import type { BBox, GameAction, ImageEditRequest, SceneElement, StatePatch } from '@pnc/shared';
 import type { ActionContext, ActionResolution, GameMasterProvider, WorldEventDraft } from '../ports';
 
 type Draft = Omit<GameAction, 'elementId'>;
 const on = (v: unknown) => v === true || v === 'true';
 const has = (e: SceneElement, ...tags: string[]) => tags.some((t) => e.tags.includes(t));
-const lower = (s: string) => s.charAt(0).toLowerCase() + s.slice(1);
 
 export class MockGameMaster implements GameMasterProvider {
   async describeActions({ element, world }: ActionContext): Promise<Draft[]> {
@@ -77,7 +76,8 @@ export class MockGameMaster implements GameMasterProvider {
 
   async resolveAction(action: GameAction, { element, location, world }: ActionContext): Promise<ActionResolution> {
     const name = element.name;
-    const the = lower(name);
+    const the = withArticle(name);
+    const toThe = toArticle(name);
     const loc = location.id;
     const patch: StatePatch = [];
     const events: WorldEventDraft[] = [];
@@ -117,7 +117,7 @@ export class MockGameMaster implements GameMasterProvider {
           addBox = { x: b.x + b.w * 0.3, y: b.y + b.h * 0.3, w: b.w * 0.4, h: b.h * 0.14 };
           add.push(revealed(st.contient, addBox));
           setState({ contient: '' });
-          narration = `${name} s'ouvre. À l'intérieur : ${lower(st.contient)}.`;
+          narration = `${name} s'ouvre. À l'intérieur : ${withArticle(st.contient)}.`;
         }
         return {
           patch,
@@ -136,7 +136,7 @@ export class MockGameMaster implements GameMasterProvider {
         return {
           patch,
           events,
-          narration: `Vous trouvez : ${lower(content)}.`,
+          narration: `Vous trouvez : ${withArticle(content)}.`,
           imageEdit: edit(`Un objet (${content}) apparaît près de ${the}`, { add: [revealed(content, box)] }, box),
         };
       }
@@ -168,7 +168,7 @@ export class MockGameMaster implements GameMasterProvider {
         ev(`Le voyageur décroche ${the}.`, 'visible', 2);
         return { patch, events, narration: 'Derrière, une tache plus claire sur le mur… et rien d’autre.', imageEdit: edit(`${name} décroché`, { state: { décroché: true } }) };
       case 'knock':
-        ev(`On frappe à ${the}.`, 'audible', 2);
+        ev(`On frappe ${toThe}.`, 'audible', 2);
         return { patch, events, narration: 'Toc, toc, toc… Personne ne répond.' };
       case 'listen':
         ev(`Le voyageur colle l'oreille contre ${the}.`);
@@ -177,7 +177,7 @@ export class MockGameMaster implements GameMasterProvider {
         ev(`Le voyageur regarde par ${the}.`);
         return { patch, events, narration: 'Dehors, la nuit et la brume du port.' };
       case 'drink':
-        ev(`Le voyageur boit à ${the}.`);
+        ev(`Le voyageur boit ${toThe}.`);
         return { patch, events, narration: 'Ça réchauffe… ou ça rafraîchit, selon.' };
       case 'sit':
         ev(`Le voyageur s'installe près de ${the}.`);
@@ -208,7 +208,7 @@ export class MockGameMaster implements GameMasterProvider {
           { op: 'setCharacter', characterId: character.id, changes: { mood: 'ravie' } },
         );
         setState({ humeur: 'ravie' });
-        ev(`Le voyageur offre ${lower(item.name)} à ${character.name}.`, 'visible', 3, { targetCharacterId: character.id });
+        ev(`Le voyageur offre ${withArticle(item.name)} à ${character.name}.`, 'visible', 3, { targetCharacterId: character.id });
         return { patch, events, imageEdit: edit(`${character.name} sourit`, { state: { humeur: 'ravie' } }) };
       }
       default:

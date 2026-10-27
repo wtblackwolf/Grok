@@ -58,6 +58,7 @@ export class MockDialogueProvider implements DialogueProvider {
     if (/prend /.test(s)) return { text: 'Hé ! Ça ne vous appartient pas, ça.' };
     if (/allume/.test(s)) return { text: 'Ah, un peu de lumière. C’est pas trop tôt.' };
     if (/ouvre le coffre|ouvre/.test(s) && hashString(m.eventId + c.id) % 2 === 0) return { text: 'Faites attention à ce que vous ouvrez, ici.' };
+    if (/arrive/.test(s) && p.memory.some((x) => x.summary.includes("s'en va"))) return { text: 'Tiens, vous revoilà.' };
     if (/arrive/.test(s)) return { text: /méfiant|bourru|grognon/.test(c.mood) ? 'Tiens… Encore un qui traîne la nuit.' : 'Oh, de la visite. Bienvenue.' };
     if (/frappe/.test(s)) return { text: 'Si personne ne répond, c’est qu’il n’y a personne.' };
     return null;
