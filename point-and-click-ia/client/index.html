@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+    <meta name="theme-color" content="#14110f" />
+    <title>Point-and-click IA</title>
+  </head>
+  <body>
+    <div id="app">
+      <header id="hud">
+        <div id="location-name">…</div>
+        <div id="inventory" aria-label="Inventaire"></div>
+        <div class="hud-buttons">
+          <button id="btn-outlines" title="Afficher les contours des éléments" aria-pressed="false">◎</button>
+          <button id="btn-dialogue" title="Journal des dialogues">💬</button>
+          <button id="btn-new" title="Nouvelle partie">↻</button>
+        </div>
+      </header>
+      <main id="stage">
+        <canvas id="scene" aria-label="Scène : touchez un élément pour le nommer, maintenez pour agir"></canvas>
+        <div id="loading" class="hidden">…</div>
+        <section id="dialogue" class="hidden" aria-live="polite">
+          <header><span id="dialogue-title">Dialogues</span><button id="dialogue-close" aria-label="Fermer">✕</button></header>
+          <div id="dialogue-log"></div>
+          <form id="dialogue-form" class="hidden">
+            <input id="dialogue-input" autocomplete="off" maxlength="500" placeholder="Que dites-vous ?" />
+            <button type="submit">Dire</button>
+          </form>
+        </section>
+      </main>
+      <footer id="label-bar">
+        <div id="label-name">Touchez un élément de la scène</div>
+        <div id="label-narration"></div>
+      </footer>
+    </div>
+    <div id="wheel" class="hidden" aria-hidden="true"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>

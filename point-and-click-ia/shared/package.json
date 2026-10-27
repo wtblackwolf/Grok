@@ -1,0 +1,9 @@
+{
+  "name": "@pnc/shared",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "description": "Types partagés (WorldState, API) et logique pure : bus d'événements, géométrie, perception, patchs, roue radiale."
+}
